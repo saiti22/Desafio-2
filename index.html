@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="variables.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <title>DncWeather</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <div id="titulo">
+                <h2>DncWeather</h2>
+            </div>
+            <div id="links-nav">
+                <a href="">Endereços</a>
+                <a href="">Previsão do Tempo</a>
+            </div>
+        </nav>    
+    </header>
+    <section>
+        <div id="description-section">
+            <span>Descubra Mais com Precisão: <br>
+                  Previsões do Tempo e endereços <br>em tempo real.          
+            </span>
+            <img id="img-description-section" src="./images/clouds_sun.svg" alt="clouds_sun">
+        </div>
+        <div id="card">
+            <form method="get">
+                <label for="primeiro-nome">Primeiro Nome:</label>
+                <input type="text" name="primeiro-nome" id="primeiro-nome" placeholder="Insira seu primeiro nome">
+                <label for="email">E-mail:</label>
+                <input type="email" name="email" id="email" placeholder="Insira seu e-mail">
+                <label for="cep">Digite o CEP:</label>
+                <input type="number" minlength="8" maxlength="8" name="cep" id="cep" placeholder="Insira o CEP">
+                <label for="latitude">Digite a latitude e longitude para saber a previsão:</label>
+                <div id="latitude-longitude">
+                    <input type="text" name="latitude" id="latitude" placeholder="Latitude">
+                    <input type="text" name="longitude" id="longitude" placeholder="Longitude">
+                </div>
+                <button type="button" onclick="getAdressByCep(); getWeather();">Acessar</button>
+            </form>
+        </div>
+        <div id="resultado-cep">
+            <div id="titulo_resultado">
+                <span>Resultado da busca por CEP:</span>
+                <img id="img_titulo_resultado" src="./images/location_pin.svg" alt="location_pin">
+            </div>
+            <table id="tbl-resultado-cep">
+                <thead>
+                    <tr>
+                        <th>Logradouro/nome</th>
+                        <th>Bairro/Distrito</th>
+                        <th>Localidade/UF</th>
+                    </tr>                    
+                    <tbody id="tbl-resultado-cep-body">
+                        <tr>
+                            <td id="logradouro"></td>
+                            <td id="bairro"></td>
+                            <td id="localidade"></td>
+                        </tr>
+                    </tbody>
+                </thead>
+            </table>
+        </div>
+        <div id="resultado-regiao">
+            <div id="titulo-resultado-regiao">
+                <span>Previsão do tempo na região:</span>
+                <img id="temp_icon" src="./images/clouds.svg" alt="clouds">
+            </div>
+            <div id="resultado-regiao-card">
+                <p>Previsão de tempo de acordo com a região: <span id="temp"></span> </p> 
+            </div>            
+        </div>
+    </section>
+    <footer>
+        <a href="">Termos de Uso</a>
+        <hr>
+        <a href="">Política de Privacidade</a>
+    </footer>
+
+    <script>
+        function getWeather(){
+            var latitude = document.getElementById("latitude").value;
+            var longitude = document.getElementById("longitude").value;
+            console.log("lat", latitude);
+            console.log("long", longitude);
+            if (latitude != '' && longitude != ''){
+                var url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m`;
+                fetch(url)
+                .then(function(response){
+                    return response.json();
+                })
+                .then(function(data){
+                    console.log(data.hourly.temperature_2m[0]);
+                    document.getElementById("temp").innerHTML = data.hourly.temperature_2m[0] + "ºC";
+                })
+            }
+            
+        }
+
+        function getAdressByCep(){
+            var cep = document.getElementById("cep").value;
+            if(cep != ''){
+                var url = `https://viacep.com.br/ws/${cep}/json/`
+                fetch(url)
+                .then(function(response){
+                    return response.json();
+                })
+                .then(function(data){
+                    document.getElementById("logradouro").innerHTML = data.logradouro;
+                    document.getElementById("bairro").innerHTML = data.bairro;
+                    document.getElementById("localidade").innerHTML = data.localidade + "/" + data.uf;
+                })
+                .catch(function(error){
+                    console.log(error);
+                })
+            }
+            
+        }
+
+
+
+    </script>
+</body>
+</html>
